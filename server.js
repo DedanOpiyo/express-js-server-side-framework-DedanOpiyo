@@ -2,15 +2,23 @@
 
 // Import required modules
 const express = require('express');
+const productRoutes = require('./routes/productRoutes');
+const connectDB = require('./config/db');
 const bodyParser = require('body-parser');
 const { v4: uuidv4 } = require('uuid');
+const errorHandler = require('./middleware/errorHandler');
+const logger = require('./middleware/logger');
 
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// connect Database
+connectDB();
+
 // Middleware setup
 app.use(bodyParser.json());
+app.use(logger); // Log every request
 
 // Sample in-memory products database
 let products = [
@@ -42,8 +50,13 @@ let products = [
 
 // Root route
 app.get('/', (req, res) => {
-  res.send('Welcome to the Product API! Go to /api/products to see all products.');
+  res.send('Hello World');
 });
+
+app.use('/api/products', productRoutes);
+
+// Error handler (after all routes)
+app.use(errorHandler);
 
 // TODO: Implement the following routes:
 // GET /api/products - Get all products
@@ -52,10 +65,10 @@ app.get('/', (req, res) => {
 // PUT /api/products/:id - Update a product
 // DELETE /api/products/:id - Delete a product
 
-// Example route implementation for GET /api/products
-app.get('/api/products', (req, res) => {
-  res.json(products);
-});
+// // Example route implementation for GET /api/products
+// app.get('/api/products', (req, res) => {
+//   res.json(products);
+// });
 
 // TODO: Implement custom middleware for:
 // - Request logging
